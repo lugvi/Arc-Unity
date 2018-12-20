@@ -4,6 +4,6 @@ using UnityEngine;
 
 public class ontrig : MonoBehaviour {
 private void OnTriggerEnter2D(Collider2D other) {
-	Debug.Log("LOSE");
+	//Debug.Log("LOSE");
 }
 }
