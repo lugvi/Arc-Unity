@@ -4,14 +4,27 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
 
+	public GameManager gm;
+	private void Start() {
+		gm = GameManager.instance;
+	}
 	private void OnTriggerEnter2D(Collider2D other) {
-		Debug.Log(other.tag);
 		if(other.tag == "Finish")
-			Debug.Log("Lose");
+		{
+			gm.OnGameOver();
+		}
 		else if(other.tag == "Center")
 		{
-			StartCoroutine(other.GetComponent<ArcController>().Shrink(1,10));
-		}
+
+			// StartCoroutine(other.GetComponent<ArcController>().Shrink(1,10));
 			Debug.Log("StartShrink");
+		}
+
+		if(other.tag == "Coin")
+		{
+			gm.AddScore();
+			Destroy(other.gameObject);
+		}
+
 	}
 }

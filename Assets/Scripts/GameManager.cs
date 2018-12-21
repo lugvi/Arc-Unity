@@ -5,34 +5,53 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     #region singleton
+
+    public float swipeSensitivity;
     public static GameManager instance;
     private void Awake() { instance = this; }
     #endregion
+
+    [Header("References")]
     public Grid grid;
 
-    public Color[] colors;
-    [Range(0, 1)]
-    public float CoinChance;
+    public IntVariable currentScore;
+    public IntVariable highScore;
+
     public ArcController arcPrefab;
     public GameObject coinPrefab;
 
     public Transform player;
 
+    Vector3 destination;
+    [Header("Modifiable Values")]
+    [Range(0, 1)]
+    public float CoinChance;
     public float playerSpeed;
-    public Vector3 destination;
+    public Color[] colors;
 
-    public List<ArcController> arcss;
-    public Queue<ArcController> pool;
+    public float RotationSpeedMin;
+    public float RotationSpeedMax;
+
+    List<ArcController> arcs;
+    Queue<ArcController> pool;
+
+    UIManager ui;
 
     bool moving;
 
     private void Start()
     {
         destination = player.position;
+        ui = UIManager.instance;
         pool = new Queue<ArcController>();
+        arcs = new List<ArcController>();
         SpawnFirstArcs();
+        currentScore.value =0;
+        Time.timeScale = 1;
 
     }
+
+    public touchsimulator touchsimulator;
 
 
     void SpawnFirstArcs()
@@ -43,11 +62,12 @@ public class GameManager : MonoBehaviour
             {
                 ArcController arc = SpawnArc(new Vector3(i, j, 0), Random.Range(90, 190), (Direction)Random.Range(0, 2));
 
-                arcss.Add(arc);
+                arcs.Add(arc);
             }
         }
     }
 
+     public  Vector2Int playerpos;
     void Update()
     {
 #if UNITY_EDITOR
@@ -71,40 +91,55 @@ public class GameManager : MonoBehaviour
 
         }
 
-#elif UNITY_ANDROID
-        if (Input.touchCount > 0)
+        if(Input.GetMouseButton(0)&& !moving)
         {
-            if (Input.GetTouch(0).deltaPosition.x > 0)
+            if(touchsimulator.cardinalDirection.magnitude != 0)
             {
-                moveGrid(Vector3.right);
-                destination.x += 1;
-            }
-            if (Input.GetTouch(0).deltaPosition.x < 0)
-            {
-                destination.x -= 1;
-                moveGrid(-Vector3.right);
-            }
-            if (Input.GetTouch(0).deltaPosition.y > 0)
-            {
-                destination.y += 1;
-                moveGrid(Vector3.up);
-            }
-            if (Input.GetTouch(0).deltaPosition.x < 0)
-            {
-                destination.y -= 1;
-                moveGrid(-Vector3.up);
-            }
+            destination.x = playerpos.x + touchsimulator.cardinalDirection.x;
+            destination.y = playerpos.y + touchsimulator.cardinalDirection.y;
+            moveGrid(touchsimulator.cardinalDirection);
             StartCoroutine(MovePlayer(destination));
+            }
+
+        }
+
+ #elif UNITY_ANDROID
+        if (Input.touchCount > 0 && !moving)
+        {
+            if (Input.GetTouch(0).deltaPosition.x > swipeSensitivity)
+            {
+                destination.x = playerpos.x + 1;
+                moveGrid(Vector3.right);
+                StartCoroutine(MovePlayer(destination));
+            }
+            else if (Input.GetTouch(0).deltaPosition.x < -swipeSensitivity)
+            {
+                destination.x = playerpos.x - 1;
+                moveGrid(-Vector3.right);
+                StartCoroutine(MovePlayer(destination));
+            }
+            else if (Input.GetTouch(0).deltaPosition.y > swipeSensitivity)
+            {
+                destination.y =playerpos.y + 1;
+                moveGrid(Vector3.up);
+                StartCoroutine(MovePlayer(destination));
+            }
+            else if (Input.GetTouch(0).deltaPosition.y < -swipeSensitivity)
+            {
+                destination.y = playerpos.y -1;
+                moveGrid(-Vector3.up);
+                StartCoroutine(MovePlayer(destination));
+            }
         }
 #endif
-        rotato();
+        Rotator();
 
 
     }
 
-    void rotato()
+    void Rotator()
     {
-        foreach (ArcController arc in arcss)
+        foreach (ArcController arc in arcs)
         {
             arc.Rotate();
         }
@@ -126,6 +161,7 @@ public class GameManager : MonoBehaviour
                 yield return 0;
             }
             moving = false;
+            playerpos = new Vector2Int((int)player.position.x,(int)player.position.y);
         }
 
         ClearArray();
@@ -135,7 +171,7 @@ public class GameManager : MonoBehaviour
     public int removeDistY;
     void ClearArray()
     {
-        List<ArcController> rem = arcss.FindAll(x => Mathf.Abs(x.transform.position.x - player.position.x) > removeDistX || Mathf.Abs(x.transform.position.y - player.position.y) > removeDistY);//new List<ArcController>();
+        List<ArcController> rem = arcs.FindAll(x => Mathf.Abs(x.transform.position.x - player.position.x) > removeDistX || Mathf.Abs(x.transform.position.y - player.position.y) > removeDistY);//new List<ArcController>();
 
         for (int i = 0; i < rem.Count; i++)
         {
@@ -143,7 +179,8 @@ public class GameManager : MonoBehaviour
             r.gameObject.SetActive(false);
             r.transform.position = Vector2.one * 100;
             pool.Enqueue(r);
-            arcss.Remove(r);
+            arcs.Remove(r);
+            Destroy(r.coin);
         }
 
     }
@@ -166,7 +203,7 @@ public class GameManager : MonoBehaviour
         arc.rotationDirection = spinDirection;
         arc.col = colors[Random.Range(0, colors.Length)];
         if (Random.value < CoinChance)
-            Instantiate(coinPrefab, pos, Quaternion.identity, grid.transform);
+        arc.coin = Instantiate(coinPrefab, arc.transform);
         return arc;
     }
 
@@ -180,8 +217,8 @@ public class GameManager : MonoBehaviour
         {
             for (int i = -2; i < 3; i++)
             {
-                ArcController arc = SpawnArc(new Vector3(destination.x + direction.x * removeDistX, destination.y + i, 0), Random.Range(90, 190), (Direction)Random.Range(0, 2));
-                arcss.Add(arc);
+                ArcController arc = SpawnArc(new Vector3(destination.x + direction.x * removeDistX, destination.y + i, 0), Random.Range(RotationSpeedMin, RotationSpeedMax), (Direction)Random.Range(0, 2));
+                arcs.Add(arc);
             }
         }
         else
@@ -189,13 +226,33 @@ public class GameManager : MonoBehaviour
         {
             for (int i = -2; i < 3; i++)
             {
-                ArcController arc = SpawnArc(new Vector3(destination.x + i, destination.y + direction.y * removeDistY, 0), Random.Range(90, 190), (Direction)Random.Range(0, 2));
-                arcss.Add(arc);
+                ArcController arc = SpawnArc(new Vector3(destination.x + i, destination.y + direction.y * removeDistY, 0), Random.Range(RotationSpeedMin, RotationSpeedMax), (Direction)Random.Range(0, 2));
+                arcs.Add(arc);
             }
         }
+    }
 
 
+    public void OnGameOver()
+    {
+        Debug.Log("GameOver");
+        ui.DisplayGameOverMenu();
+        Time.timeScale = 0;
+    }
 
+    public void RestartGame()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+        currentScore.value = 0;
+
+    }
+
+    public void AddScore()
+    {
+        currentScore.value++;
+        UIManager.instance.UpdateScoreUI();
+        if(currentScore.value>highScore.value)
+            highScore.value = currentScore.value;
     }
 
 

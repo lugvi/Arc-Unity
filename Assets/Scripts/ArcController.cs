@@ -7,10 +7,12 @@ public class ArcController : MonoBehaviour
     public GameObject wing1;
 
     public GameObject wing2;
+    public GameObject coin;
 
     public Direction rotationDirection;
 
     public Color col;
+   
 
     public float rotationSpeed;
 
@@ -22,7 +24,6 @@ public class ArcController : MonoBehaviour
         wing1.GetComponent<SpriteRenderer>().color = col;
         wing2.GetComponent<SpriteRenderer>().color = col;
     }
-
 
     public void Rotate()
     {
