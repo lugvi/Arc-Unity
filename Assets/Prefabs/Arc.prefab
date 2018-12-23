@@ -215,8 +215,7 @@ MonoBehaviour:
   wing2: {fileID: 1878806173005648}
   coin: {fileID: 0}
   rotationDirection: 0
-  ArcCloseTime: {fileID: 11400000, guid: d6f1dbe00f7e60f47af63921b46797e1, type: 2}
-  playing: {fileID: 11400000, guid: e353fe4d48c05a641b95cc9b12e4839d, type: 2}
+  ArcCloseTime: 0
   col: {r: 0, g: 0, b: 0, a: 0}
   rotationSpeed: 180
 --- !u!212 &212636205739781810

@@ -11,17 +11,19 @@ public class ArcController : MonoBehaviour
 
     public Direction rotationDirection;
 
-    public FloatVariable ArcCloseTime;
-
-    public BoolVariable playing;
+    public float ArcCloseTime;
 
     public Color col;
 
 
     public float rotationSpeed;
 
+    GameManager gm;
+
     private void Start()
-    {
+    {   
+        gm = GameManager.instance;
+        ArcCloseTime = gm.arcCloseTime;
         wing1.GetComponent<SpriteRenderer>().color = col;
         wing2.GetComponent<SpriteRenderer>().color = col;
     }
@@ -50,10 +52,10 @@ public class ArcController : MonoBehaviour
         //float starttime = Time.time;
         while (wing2.transform.localRotation.eulerAngles.z > 180 + z && gameObject.activeInHierarchy)
         {
-            if(!playing.value)
+            if(!gm.playing)
                 break;
         //Debug.Log(wing2.transform.localRotation.eulerAngles.z + " " +z);
-            wing2.transform.Rotate(Vector3.back * Time.deltaTime * ((180-z)/ArcCloseTime.value));
+            wing2.transform.Rotate(Vector3.back * Time.deltaTime * ((180-z)/ArcCloseTime));
             yield return null;
         }
 

@@ -12,8 +12,7 @@ public class UIManager : MonoBehaviour
     #endregion
     public Text scoreText;
 
-    public IntVariable currentScore;
-    public IntVariable highScore;
+ 
 
     public GameObject gameOverPanel;
 
@@ -28,28 +27,38 @@ public class UIManager : MonoBehaviour
     public Text sliderValueText;
     public Slider slider;
 
-    public FloatVariable swipesensitivity;
+    public Button Startbutton;
+    public GameObject startScreen;
+
+    GameManager gm;
+
 
     private void Start()
     {
-        slider.onValueChanged.AddListener((f) =>
+        gm = GameManager.instance;
+        Startbutton.onClick.AddListener(()=>
         {
-            sliderValueText.text = f + "";
-            swipesensitivity.value = f;
+            startScreen.SetActive(false);
+            gm.InitValues();
         });
+        // slider.onValueChanged.AddListener((f) =>
+        // {
+        //     sliderValueText.text = f + "";
+        //     swipesensitivity = f;
+        // });
     }
 
 
     public void UpdateScoreUI()
     {
-        scoreText.text = currentScore.value + "";
+        scoreText.text = gm.currentScore + "";
     }
 
     public void DisplayGameOverMenu()
     {
         gameOverPanel.SetActive(true);
-        endScoreText.text = currentScore.value + "";
-        highScoreText.text = highScore.value + "";
+        endScoreText.text = gm.currentScore + "";
+        highScoreText.text =gm.highScore + "";
     }
 
 

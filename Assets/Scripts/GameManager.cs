@@ -12,21 +12,17 @@ public class GameManager : MonoBehaviour
 
     [Header("References")]
     public Grid grid;
-    public FloatVariable swipeSensitivity;
-    public FloatVariable arcShrinkTime;
-
-    public IntVariable currentScore;
-    public IntVariable highScore;
 
     public ArcController arcPrefab;
     public GameObject coinPrefab;
 
     public Transform player;
-    public BoolVariable playing;
     UIManager ui;
 
     [Header("Modifiable Values")]
     [Range(0, 1)]
+    public float swipeSensitivity;
+    public float arcCloseTime;
     public float CoinChance;
     public float playerSpeed;
     public Color[] colors;
@@ -37,7 +33,7 @@ public class GameManager : MonoBehaviour
     List<ArcController> arcs;
     Queue<ArcController> pool;
 
-    
+
 
 
 
@@ -45,6 +41,10 @@ public class GameManager : MonoBehaviour
     public int removeDistY;
 
     [Header("Read Only Values")]
+
+    public int currentScore;
+    public int highScore;
+    public bool playing;
 
     public Vector2Int playerpos;
     public Vector3 destination;
@@ -57,12 +57,10 @@ public class GameManager : MonoBehaviour
         //        t = Input.GetTouch(0);
         // #endif
         // PlayerMove(destination);
-        if(playing.value)
+        if (playing)
         {
-            
-        TouchControls2();
-        KeyboardControls();
-        Rotator();
+            TouchControls2();
+            Rotator();
         }
     }
 
@@ -70,7 +68,6 @@ public class GameManager : MonoBehaviour
 
     public void InitValues()
     {
-        playing.value = true;
         destination = player.position;
         playerpos.x = (int)player.position.x;
         playerpos.y = (int)player.position.y;
@@ -78,9 +75,11 @@ public class GameManager : MonoBehaviour
         pool = new Queue<ArcController>();
         arcs = new List<ArcController>();
         SpawnFirstArcs();
-        currentScore.value = 0;
-        arcShrinkTime.value = 10;
+        currentScore = 0;
+        highScore = PlayerPrefs.GetInt("Highscore");
+        arcCloseTime = 10;
         Time.timeScale = 1;
+       StartCoroutine(DelayedInitializer());
     }
 
 
@@ -131,7 +130,7 @@ public class GameManager : MonoBehaviour
 
 
         // Debug.Log((Input.mousePosition.x - Screen.width / 2) + " " + (Input.mousePosition.y - Screen.height / 2));
-        if (Input.touchCount > 0 && !moving)
+        if (Input.touchCount > 0 && !moving && playing)
         {
             mousepos.x = Input.GetTouch(0).position.x - Screen.width / 2;
             mousepos.y = Input.GetTouch(0).position.y - Screen.height / 2;
@@ -184,13 +183,13 @@ public class GameManager : MonoBehaviour
             {
                 if (Mathf.Abs(t.deltaPosition.x) > Mathf.Abs(t.deltaPosition.y))
                 {
-                    if (t.deltaPosition.x > swipeSensitivity.value)
+                    if (t.deltaPosition.x > swipeSensitivity)
                     {
                         destination = new Vector3(playerpos.x + 1, playerpos.y);
                         moveGrid(Vector2Int.right);
                         StartCoroutine(MovePlayer(destination));
                     }
-                    else if (t.deltaPosition.x < -swipeSensitivity.value)
+                    else if (t.deltaPosition.x < -swipeSensitivity)
                     {
                         destination = new Vector3(playerpos.x - 1, playerpos.y);
                         moveGrid(Vector2Int.left);
@@ -202,13 +201,13 @@ public class GameManager : MonoBehaviour
                 else
                 {
 
-                    if (t.deltaPosition.y > swipeSensitivity.value)
+                    if (t.deltaPosition.y > swipeSensitivity)
                     {
                         destination = new Vector3(playerpos.x, playerpos.y + 1);
                         moveGrid(Vector2Int.up);
                         StartCoroutine(MovePlayer(destination));
                     }
-                    else if (t.deltaPosition.y < -swipeSensitivity.value)
+                    else if (t.deltaPosition.y < -swipeSensitivity)
                     {
                         destination = new Vector3(playerpos.x, playerpos.y - 1);
                         moveGrid(Vector2Int.down);
@@ -217,6 +216,12 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    public IEnumerator DelayedInitializer()
+    {
+        yield return new WaitForSeconds(0.1f);
+        playing = true;
     }
 
     Vector3 lastMousePosition;
@@ -373,27 +378,27 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("GameOver");
         ui.DisplayGameOverMenu();
-        playing.value = false;
-      //  Time.timeScale = 0;
+        playing = false;
+        //  Time.timeScale = 0;
     }
 
     public void RestartGame()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene(0);
-        currentScore.value = 0;
+        currentScore = 0;
 
     }
 
     public void AddScore()
     {
-        currentScore.value++;
+        currentScore++;
 
-        if (currentScore.value % 5 == 0)
+        if (currentScore % 5 == 0)
         {
-            if (arcShrinkTime.value > 5)
+            if (arcCloseTime > 5)
             {
 
-                arcShrinkTime.value--;
+                arcCloseTime--;
             }
             if (player.transform.localScale.x < 1.8)
             {
@@ -401,8 +406,11 @@ public class GameManager : MonoBehaviour
             }
         }
         UIManager.instance.UpdateScoreUI();
-        if (currentScore.value > highScore.value)
-            highScore.value = currentScore.value;
+        if (currentScore > highScore)
+        {
+            PlayerPrefs.SetInt("Highscore", currentScore);
+            highScore = currentScore;
+        }
     }
 
 
