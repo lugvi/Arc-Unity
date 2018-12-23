@@ -83,26 +83,26 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1878806173005648}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: -0, z: 0.008726839, w: -0.9999619}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4039835630956022}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 359}
 --- !u!4 &4940776315144588
 Transform:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1776646019295980}
-  m_LocalRotation: {x: 0, y: 0, z: 0.6340559, w: 0.7732873}
+  m_LocalRotation: {x: 0, y: 0, z: 0.17364816, w: 0.9848078}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4039835630956022}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 78.7}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 20}
 --- !u!58 &58452333916483446
 CircleCollider2D:
   m_ObjectHideFlags: 1
@@ -215,6 +215,7 @@ MonoBehaviour:
   wing2: {fileID: 1878806173005648}
   coin: {fileID: 0}
   rotationDirection: 0
+  ArcCloseTime: {fileID: 11400000, guid: d6f1dbe00f7e60f47af63921b46797e1, type: 2}
   col: {r: 0, g: 0, b: 0, a: 0}
   rotationSpeed: 180
 --- !u!212 &212636205739781810

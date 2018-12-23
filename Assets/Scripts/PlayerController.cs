@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour {
 		else if(other.tag == "Center")
 		{
 
-			// StartCoroutine(other.GetComponent<ArcController>().Shrink(1,10));
+			StartCoroutine(other.GetComponent<ArcController>().Shrink());
 			Debug.Log("StartShrink");
 		}
 

@@ -22,15 +22,32 @@ public class UIManager : MonoBehaviour
     public Button restartButton;
 
 
+
+
+    public Text sliderValueText;
+    public Slider slider;
+
+    public FloatVariable swipesensitivity;
+
+    private void Start()
+    {
+        slider.onValueChanged.AddListener((f) =>
+        {
+            sliderValueText.text = f + "";
+            swipesensitivity.value = f;
+        });
+    }
+
+
     public void UpdateScoreUI()
     {
         scoreText.text = currentScore.value + "";
     }
 
-	public void DisplayGameOverMenu()
-	{
-		gameOverPanel.SetActive(true);
-		endScoreText.text = currentScore.value+"";
-		highScoreText.text = highScore.value+"";
-	}
+    public void DisplayGameOverMenu()
+    {
+        gameOverPanel.SetActive(true);
+        endScoreText.text = currentScore.value + "";
+        highScoreText.text = highScore.value + "";
+    }
 }
