@@ -16,6 +16,7 @@ public class UIManager : MonoBehaviour
     public IntVariable highScore;
 
     public GameObject gameOverPanel;
+
     public Text endScoreText;
     public Text highScoreText;
 
@@ -50,4 +51,6 @@ public class UIManager : MonoBehaviour
         endScoreText.text = currentScore.value + "";
         highScoreText.text = highScore.value + "";
     }
+
+
 }

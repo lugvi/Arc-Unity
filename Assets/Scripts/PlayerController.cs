@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
 
-	public GameManager gm;
+	GameManager gm;
 	private void Start() {
 		gm = GameManager.instance;
 	}
@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour {
 		if(other.tag == "Finish")
 		{
 			gm.OnGameOver();
+			GetComponent<ParticleSystem>().Play();
 		}
 		else if(other.tag == "Center")
 		{

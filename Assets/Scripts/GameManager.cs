@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
     public GameObject coinPrefab;
 
     public Transform player;
+    public BoolVariable playing;
     UIManager ui;
 
     [Header("Modifiable Values")]
@@ -36,6 +37,7 @@ public class GameManager : MonoBehaviour
     List<ArcController> arcs;
     Queue<ArcController> pool;
 
+    
 
 
 
@@ -43,6 +45,7 @@ public class GameManager : MonoBehaviour
     public int removeDistY;
 
     [Header("Read Only Values")]
+
     public Vector2Int playerpos;
     public Vector3 destination;
     bool moving;
@@ -54,14 +57,21 @@ public class GameManager : MonoBehaviour
         //        t = Input.GetTouch(0);
         // #endif
         // PlayerMove(destination);
+        if(playing.value)
+        {
+            
         TouchControls2();
         KeyboardControls();
         Rotator();
+        }
     }
-    private void Start()
-    {
-        destination = player.position;
 
+
+
+    public void InitValues()
+    {
+        playing.value = true;
+        destination = player.position;
         playerpos.x = (int)player.position.x;
         playerpos.y = (int)player.position.y;
         ui = UIManager.instance;
@@ -71,7 +81,6 @@ public class GameManager : MonoBehaviour
         currentScore.value = 0;
         arcShrinkTime.value = 10;
         Time.timeScale = 1;
-
     }
 
 
@@ -364,7 +373,8 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("GameOver");
         ui.DisplayGameOverMenu();
-        Time.timeScale = 0;
+        playing.value = false;
+      //  Time.timeScale = 0;
     }
 
     public void RestartGame()
