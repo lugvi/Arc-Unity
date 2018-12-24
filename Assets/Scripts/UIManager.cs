@@ -11,6 +11,7 @@ public class UIManager : MonoBehaviour
     private void Awake() { instance = this; }
     #endregion
     public Text scoreText;
+    public Text coinsText;
 
  
 
@@ -52,6 +53,7 @@ public class UIManager : MonoBehaviour
     public void UpdateScoreUI()
     {
         scoreText.text = gm.currentScore + "";
+        coinsText.text = gm.currentCoins + "";
     }
 
     public void DisplayGameOverMenu()

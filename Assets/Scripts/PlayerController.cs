@@ -18,13 +18,14 @@ public class PlayerController : MonoBehaviour {
 		{
 
 			StartCoroutine(other.GetComponent<ArcController>().Shrink());
-			Debug.Log("StartShrink");
+		//	Debug.Log("StartShrink");
 		}
 
 		if(other.tag == "Coin")
 		{
-			gm.AddScore();
+			gm.AddCoins();
 			Destroy(other.gameObject);
+			Debug.Log("coin");
 		}
 
 	}
