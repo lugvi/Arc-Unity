@@ -79,7 +79,10 @@ public class GameManager : MonoBehaviour
         playing = true;
         //StartCoroutine(DelayedInitializer());
 
-        swipeSensitivity = new Vector2(Screen.width*0.1f,Screen.height*0.1f);
+        if (!PlayerPrefs.HasKey("xSens"))
+            swipeSensitivity = Vector2.zero;
+        else
+            swipeSensitivity = new Vector2(PlayerPrefs.GetFloat("xSens"), PlayerPrefs.GetFloat("ySens"));
     }
 
 
@@ -108,34 +111,33 @@ public class GameManager : MonoBehaviour
 
             if (XAxis != 0)
             {
-                StartCoroutine(MovePlayer(Vector3.right*XAxis));
+                StartCoroutine(MovePlayer(Vector3.right * XAxis));
             }
             else if (YAxis != 0)
             {
-                Vector3 dir = Vector3.up*YAxis;
-                StartCoroutine(MovePlayer(Vector3.up*YAxis));
+                StartCoroutine(MovePlayer(Vector3.up * YAxis));
             }
         }
 
     }
 
-   
+
 
 
     public void SwipeMovement()
     {
-        if(Input.touchCount==1&&canSwipe)
+        if (Input.touchCount == 1 && canSwipe)
         {
             Touch touch = Input.GetTouch(0);
-            if(Mathf.Abs(touch.deltaPosition.x)>Mathf.Abs(touch.deltaPosition.y))//vertical swipe
+            if (Mathf.Abs(touch.deltaPosition.x) > Mathf.Abs(touch.deltaPosition.y))//vertical swipe
             {
-                if(touch.deltaPosition.x > swipeSensitivity.x)
+                if (touch.deltaPosition.x > swipeSensitivity.x)
                 {
                     StartCoroutine(MovePlayer(Vector3.right));
                 }
-                else if(touch.deltaPosition.x < -swipeSensitivity.x)
+                else if (touch.deltaPosition.x < -swipeSensitivity.x)
                 {
-                    StartCoroutine(MovePlayer(Vector3.left));                    
+                    StartCoroutine(MovePlayer(Vector3.left));
                 }
                 else
                 {
@@ -144,19 +146,19 @@ public class GameManager : MonoBehaviour
             }
             else//horizontal swipe
             {
-                if(touch.deltaPosition.y > swipeSensitivity.y)
+                if (touch.deltaPosition.y > swipeSensitivity.y)
                 {
                     StartCoroutine(MovePlayer(Vector3.up));
                 }
-                else if(touch.deltaPosition.y < -swipeSensitivity.y)
+                else if (touch.deltaPosition.y < -swipeSensitivity.y)
                 {
-                    StartCoroutine(MovePlayer(Vector3.down));                    
+                    StartCoroutine(MovePlayer(Vector3.down));
                 }
                 else
                 {
                     return;
                 }
-                
+
             }
         }
 
@@ -184,7 +186,7 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator MovePlayer(Vector3 dir)
     {
-        if (moving||!playing)
+        if (moving || !playing)
         {
             canSwipe = true;
             yield break;
@@ -196,17 +198,17 @@ public class GameManager : MonoBehaviour
             moving = true;
             Vector3 startpos = player.position;
             Vector3 endpos = player.position + dir;
-            float lerpTime=0;
+            float lerpTime = 0;
             while (player.position != endpos && playing)
             {
-               // player.position = Vector3.MoveTowards(player.position, dest, Time.deltaTime * playerSpeed);
-               
-                lerpTime+= Time.deltaTime;
-                player.position = Vector3.Lerp(startpos, endpos, lerpTime*playerSpeed);
+                // player.position = Vector3.MoveTowards(player.position, dest, Time.deltaTime * playerSpeed);
+
+                lerpTime += Time.deltaTime;
+                player.position = Vector3.Lerp(startpos, endpos, lerpTime * playerSpeed);
                 yield return null;
             }
 
-            MoveGrid(dir,endpos);
+            MoveGrid(dir, endpos);
             ClearArray();
             canSwipe = true;
             moving = false;
@@ -251,14 +253,14 @@ public class GameManager : MonoBehaviour
         if (Random.value < CoinChance)
             arc.coin = Instantiate(coinPrefab, arc.transform);
         return arc;
-        
+
     }
 
 
 
 
 
-    public void MoveGrid(Vector3 direction,Vector3 destination)
+    public void MoveGrid(Vector3 direction, Vector3 destination)
     {
         if (direction.y == 0)
         {

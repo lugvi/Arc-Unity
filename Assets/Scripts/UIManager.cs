@@ -42,11 +42,16 @@ public class UIManager : MonoBehaviour
             startScreen.SetActive(false);
             gm.InitValues();
         });
-        // slider.onValueChanged.AddListener((f) =>
-        // {
-        //     sliderValueText.text = f + "";
-        //     swipesensitivity = f;
-        // });
+
+        slider.value = PlayerPrefs.GetFloat("xSens")/Screen.width;
+        slider.onValueChanged.AddListener((f) =>
+        {
+            sliderValueText.text = f + "";
+            Vector2 sensitivity = new Vector2(Screen.width*f,Screen.height*f);
+            gm.swipeSensitivity = sensitivity;
+            PlayerPrefs.SetFloat("xSens",sensitivity.x);
+            PlayerPrefs.SetFloat("ySens",sensitivity.y);
+        });
     }
 
 
